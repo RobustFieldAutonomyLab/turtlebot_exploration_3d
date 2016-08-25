@@ -26,10 +26,10 @@ $ roslaunch turtlebot_exploration_3d turtlebot_gmapping.launch
 ```
 
 From Remote Server:
-'''
+```
 $ roslaunch turtlebot_exploration_3d exploration_rviz.launch
 $ rosrun turtlebot_exploration_3d turtlebot_exploration_3d
-'''
+```
 
 ### Contributors ###
 
