@@ -23,12 +23,12 @@ From Turtlebot:
 ```
 $ roslaunch turtlebot_exploration_3d minimal_explo.launch
 $ roslaunch turtlebot_exploration_3d turtlebot_gmapping.launch
+$ rosrun turtlebot_exploration_3d turtlebot_exploration_3d
 ```
 
 From Remote Server:
 ```
 $ roslaunch turtlebot_exploration_3d exploration_rviz.launch
-$ rosrun turtlebot_exploration_3d turtlebot_exploration_3d
 ```
 
 ### Contributors ###
