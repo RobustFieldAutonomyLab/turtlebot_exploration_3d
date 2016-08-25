@@ -195,6 +195,13 @@ vector<pair<point3d, point3d>> generate_candidates(vector<vector<point3d>> front
                 y = frontier_groups[u][0].y() - R2 * sin(yaw);
 
                 bool candidate_valid = true;
+                n_cur_3d = cur_tree->search(point3d(x, y, z));
+
+
+                if (!n_cur_3d) {
+                    candidate_valid = false;
+                    continue;
+                }
 
                 if(sqrt(pow(x - sensor_orig.x(),2) + pow(y - sensor_orig.y(),2)) < 0.25){
                   candidate_valid = false;// delete candidates close to sensor_orig
@@ -214,7 +221,6 @@ vector<pair<point3d, point3d>> generate_candidates(vector<vector<point3d>> front
                     }
                 
                     // volumn check
-                    n_cur_3d = cur_tree->search(point3d(x, y, z));
                     for (double x_buf = x - 0.3; x_buf < x + 0.3; x_buf += octo_reso) 
                         for (double y_buf = y - 0.3; y_buf < y + 0.3; y_buf += octo_reso)
                             for (double z_buf = sensor_orig.z()-0.2; z_buf <sensor_orig.z()+0.2; z_buf += octo_reso)
