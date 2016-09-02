@@ -1,5 +1,4 @@
 <launch>  
 <node name="rviz" pkg="rviz" type="rviz" args="-d $(find turtlebot_exploration_3d)/launch/turtlebot_explo.rviz" />
-<!--node pkg="rosbag" type="record" name="record" output="screen" args=" -o turtlebot_explo /Candidate_MIs /Free_MarkerArray /Frontier_points /Goal_Marke/Jackal_Marker /Occupied_MarkerArray /Occupied_MarkerArray_3d /tf /tf_static /turtlebot/status /move_base/DWAPlannerROS/global_plan /move_base/DWAPlannerROS/local_plan /map
-" / -->
+
 </launch>
