@@ -725,7 +725,7 @@ int main(int argc, char **argv) {
                 OctomapOccupied_cubelist.points.push_back(p); 
                 j++;
             }
-            ROS_INFO("Updating %ld 3D occupied cells in RVIZ", j);
+            ROS_INFO("Updating %ld 2D occupied cells in RVIZ", j);
             Octomap_marker_pub.publish(OctomapOccupied_cubelist); //publish octomap############
 
               // Prepare the header for 2d occupied array
@@ -750,7 +750,7 @@ int main(int argc, char **argv) {
                   p.x = n.getX();
                   p.y = n.getY();
                   p.z = n.getZ();
-                  OctomapOccupied_cubelist.points.push_back(p); 
+                  OctomapOccupied_cubelist_3d.points.push_back(p); 
                   j++;
               }
               ROS_INFO("Updating %ld 3D occupied cells in RVIZ", j);
