@@ -72,7 +72,7 @@ struct SensorModel {
 SensorModel Kinect_360(64, 48, 2*PI*57/360, 2*PI*43/360, 6);    // Construct sensor model : Kinect
 
 //entropy Input: octree   Output:volume
-double get_free_volume(const octomap::OcTree *octree) {
+double countFreeVolume(const octomap::OcTree *octree) {
     double volume = 0;
     for(octomap::OcTree::leaf_iterator n = octree->begin_leafs(octree->getTreeDepth()); n != octree->end_leafs(); ++n) {
         if(!octree->isNodeOccupied(*n))
@@ -82,7 +82,7 @@ double get_free_volume(const octomap::OcTree *octree) {
 }
 
 // Input: octree, position, direction. Output: hits
-octomap::Pointcloud cast_sensor_rays(const octomap::OcTree *octree, const point3d &position,
+octomap::Pointcloud castSensorRays(const octomap::OcTree *octree, const point3d &position,
                                  const point3d &direction) {
     octomap::Pointcloud hits;
 
@@ -103,7 +103,7 @@ octomap::Pointcloud cast_sensor_rays(const octomap::OcTree *octree, const point3
     return hits;
 }
 
-vector<vector<point3d>> generate_frontier_points(const octomap::OcTree *octree) {
+vector<vector<point3d>> extractFrontierPoints(const octomap::OcTree *octree) {
 
     vector<vector<point3d>> frontier_groups;
     vector<point3d> frontier_points;
@@ -178,7 +178,7 @@ vector<vector<point3d>> generate_frontier_points(const octomap::OcTree *octree) 
 
 //generate candidates for moving. Input sensor_orig and initial_yaw, Output candidates
 //senor_orig: locationg of sensor.   initial_yaw: yaw direction of sensor
-vector<pair<point3d, point3d>> generate_candidates(vector<vector<point3d>> frontier_groups, point3d sensor_orig ) {
+vector<pair<point3d, point3d>> extractCandidateViewPoints(vector<vector<point3d>> frontier_groups, point3d sensor_orig ) {
     double R2 = 0.6;        // Robot step, in meters.
     double R3 = 0.25;       // to other frontiers
     double n = 6;
@@ -248,16 +248,16 @@ vector<pair<point3d, point3d>> generate_candidates(vector<vector<point3d>> front
 
 
 // Calculate Mutual Information. Input: octree, sensor_orig, hits, before
-double calc_MI(const octomap::OcTree *octree, const point3d &sensor_orig, const octomap::Pointcloud &hits, const double before) {
+double calculateMutualInformation(const octomap::OcTree *octree, const point3d &sensor_orig, const octomap::Pointcloud &hits, const double before) {
     auto octree_copy = new octomap::OcTree(*octree);
 
     octree_copy->insertPointCloud(hits, sensor_orig, Kinect_360.max_range, true, true);
-    double after = get_free_volume(octree_copy);
+    double after = countFreeVolume(octree_copy);
     delete octree_copy;
     return after - before;
 }
 
-void kinect_callbacks( const sensor_msgs::PointCloud2ConstPtr& cloud2_msg ) {
+void kinectCallbacks( const sensor_msgs::PointCloud2ConstPtr& cloud2_msg ) {
     pcl::PCLPointCloud2 cloud2;
     pcl_conversions::toPCL(*cloud2_msg, cloud2);
     PointCloud* cloud (new PointCloud);
@@ -275,21 +275,21 @@ void kinect_callbacks( const sensor_msgs::PointCloud2ConstPtr& cloud2_msg ) {
     {
         for (int j = 1; j< cloud->height; j++)
         {
-            if(isnan(cloud->at(i,j).x)) continue;
-            if(cloud->at(i,j).z < -1.0)    continue;  
+            if(isnan(cloud->at(i,j).x))     continue;
+            if(cloud->at(i,j).z < -1.0)     continue;  
             hits.push_back(point3d(cloud->at(i,j).x, cloud->at(i,j).y, cloud->at(i,j).z));
         }
     }
 
     cur_tree->insertPointCloud(hits, velo_orig, Kinect_360.max_range);
-    ROS_INFO("Entropy(3d map) : %f", get_free_volume(cur_tree));
+    ROS_INFO("Entropy(3d map) : %f", countFreeVolume(cur_tree));
 
     cur_tree->write(octomap_name_3d);
     delete cloud;
     delete cloud_local;
 }
 
-void hokuyo_callbacks( const sensor_msgs::PointCloud2ConstPtr& cloud2_msg )
+void laserscanCallbacks( const sensor_msgs::PointCloud2ConstPtr& cloud2_msg )
 {
     pcl::PCLPointCloud2 cloud2;
     pcl_conversions::toPCL(*cloud2_msg, cloud2);
@@ -311,7 +311,7 @@ void hokuyo_callbacks( const sensor_msgs::PointCloud2ConstPtr& cloud2_msg )
         hits.push_back(point3d(cloud->at(j).x, cloud->at(j).y, cloud->at(j).z));
     }
     cur_tree_2d->insertPointCloud(hits, laser_orig, 5.6);
-    ROS_INFO("Entropy(2d map) : %f", get_free_volume(cur_tree_2d));
+    ROS_INFO("Entropy(2d map) : %f", countFreeVolume(cur_tree_2d));
     cur_tree_2d->write(octomap_name_2d);
     delete cloud;
     delete cloud_local;
@@ -337,8 +337,8 @@ int main(int argc, char **argv) {
     octomap_name_3d = buffer;
 
 
-    ros::Subscriber kinect_sub = nh.subscribe<sensor_msgs::PointCloud2>("/camera/depth_registered/points", 1, kinect_callbacks);// need to change##########
-    ros::Subscriber hokuyo_sub = nh.subscribe<sensor_msgs::PointCloud2>("/hokuyo_points", 1, hokuyo_callbacks);// need to change#############
+    ros::Subscriber kinect_sub = nh.subscribe<sensor_msgs::PointCloud2>("/camera/depth_registered/points", 1, kinectCallbacks);// need to change##########
+    ros::Subscriber hokuyo_sub = nh.subscribe<sensor_msgs::PointCloud2>("/hokuyo_points", 1, laserscanCallbacks);// need to change#############
     ros::Publisher GoalMarker_pub = nh.advertise<visualization_msgs::Marker>( "Goal_Marker", 1 );
     ros::Publisher JackalMarker_pub = nh.advertise<visualization_msgs::Marker>( "Jackal_Marker", 1 );
     ros::Publisher Candidates_pub = nh.advertise<visualization_msgs::MarkerArray>("Candidate_MIs", 1);
@@ -392,7 +392,7 @@ int main(int argc, char **argv) {
             got_tf = true;
         }
         catch (tf::TransformException ex) {
-            ROS_WARN("Wait for tf: velodyne to map"); 
+            ROS_WARN("Wait for tf: Kinect frame"); 
         } 
         ros::Duration(0.05).sleep();
         }
@@ -405,7 +405,7 @@ int main(int argc, char **argv) {
             got_tf = true;
         }
         catch (tf::TransformException ex) {
-            ROS_WARN("Wait for tf: laser to map"); 
+            ROS_WARN("Wait for tf: LaserScan frame"); 
         } 
         ros::Duration(0.05).sleep();
         }
@@ -441,7 +441,7 @@ int main(int argc, char **argv) {
         got_tf = true;
     }
     catch (tf::TransformException ex) {
-        ROS_WARN("Wait for tf: velodyne to map"); 
+        ROS_WARN("Wait for tf: Kinect frame"); 
     } 
     ros::Duration(0.05).sleep();
     }
@@ -454,11 +454,11 @@ int main(int argc, char **argv) {
         got_tf = true;
     }
     catch (tf::TransformException ex) {
-        ROS_WARN("Wait for tf: laser to map"); 
+        ROS_WARN("Wait for tf: LaserScan frame"); 
     } 
     ros::Duration(0.05).sleep();
     }
-    // Take a Fourth Scan
+    // Take the last initial Scan
     ros::spinOnce();
 
     double train_time, test_time;
@@ -469,7 +469,7 @@ int main(int argc, char **argv) {
     while (ros::ok())
     {
             
-            vector<vector<point3d>> frontier_groups=generate_frontier_points( cur_tree_2d );
+            vector<vector<point3d>> frontier_groups=extractFrontierPoints( cur_tree_2d );
             
             //frontier_groups.clear();//in the next line
             unsigned long int o = 0;
@@ -500,8 +500,6 @@ int main(int argc, char **argv) {
             geometry_msgs::Point q;
             for(vector<vector<point3d>>::size_type n = 0; n < frontier_groups.size(); n++) { 
                 for(vector<point3d>::size_type m = 0; m < frontier_groups[n].size(); m++){
-
-
                    q.x = frontier_groups[n][m].x();
                    q.y = frontier_groups[n][m].y();
                    q.z = frontier_groups[n][m].z()+octo_reso;
@@ -515,9 +513,8 @@ int main(int argc, char **argv) {
             Frontier_points_pub.publish(Frontier_points_cubelist); //publish frontier_points
             Frontier_points_cubelist.points.clear();            
 
-
         // Generate Candidates
-        vector<pair<point3d, point3d>> candidates = generate_candidates(frontier_groups, laser_orig); 
+        vector<pair<point3d, point3d>> candidates = extractCandidateViewPoints(frontier_groups, laser_orig); 
         // Generate Testing poses
         ROS_INFO("%lu candidates generated.", candidates.size());
         frontier_groups.clear();
@@ -533,7 +530,7 @@ int main(int argc, char **argv) {
                 got_tf = true;
             }
             catch (tf::TransformException ex) {
-                ROS_WARN("Wait for tf: laser to map"); 
+                ROS_WARN("Wait for tf: LaserScan frame");  
             } 
             ros::Duration(0.05).sleep();
             }
@@ -550,11 +547,11 @@ int main(int argc, char **argv) {
             // stop
             twist_cmd.angular.z = 0;
             pub_twist.publish(twist_cmd);
-            vector<pair<point3d, point3d>> candidates = generate_candidates(frontier_groups, laser_orig);
+            vector<pair<point3d, point3d>> candidates = extractCandidateViewPoints(frontier_groups, laser_orig);
         }
         
         vector<double> MIs(candidates.size());
-        double before = get_free_volume(cur_tree);
+        double before = countFreeVolume(cur_tree);
         max_idx = 0;
 
         unsigned int p = 0;
@@ -572,10 +569,10 @@ int main(int argc, char **argv) {
             // Evaluate Mutual Information
             Secs_tmp = ros::Time::now().toSec();
             Sensor_PrincipalAxis.rotate_IP(c.second.roll(), c.second.pitch(), c.second.yaw() );
-            octomap::Pointcloud hits = cast_sensor_rays(cur_tree, c.first, Sensor_PrincipalAxis);  
+            octomap::Pointcloud hits = castSensorRays(cur_tree, c.first, Sensor_PrincipalAxis);  
             Secs_CastRay += ros::Time::now().toSec() - Secs_tmp;
             Secs_tmp = ros::Time::now().toSec();
-            MIs[i] = calc_MI(cur_tree, c.first, hits, before)/pow(  pow(c.first.x()-laser_orig.x(), 2) + pow(c.first.y() - laser_orig.y(), 2)  ,1.5);
+            MIs[i] = calculateMutualInformation(cur_tree, c.first, hits, before)/pow(  pow(c.first.x()-laser_orig.x(), 2) + pow(c.first.y() - laser_orig.y(), 2)  ,1.5);
             Secs_InsertRay += ros::Time::now().toSec() - Secs_tmp;
         }
       
@@ -679,7 +676,7 @@ int main(int argc, char **argv) {
                 got_tf = true;
             }
             catch (tf::TransformException ex) {
-                ROS_WARN("Wait for tf: velodyne to map"); 
+                ROS_WARN("Wait for tf: Kinect frame"); 
             } 
             ros::Duration(0.05).sleep();
             }
@@ -692,14 +689,14 @@ int main(int argc, char **argv) {
                 got_tf = true;
             }
             catch (tf::TransformException ex) {
-                ROS_WARN("Wait for tf: laser to map"); 
+                ROS_WARN("Wait for tf: LaserScan frame"); 
             } 
             ros::Duration(0.05).sleep();
             }
 
             // Update Octomap
             ros::spinOnce();
-            ROS_INFO("Succeed, new Map Free Volume: %f", get_free_volume(cur_tree));
+            ROS_INFO("Updating to Octomap, map volume(Free): %f", countFreeVolume(cur_tree));
             robot_step_counter++;
 
             // Prepare the header for occupied array
@@ -728,7 +725,7 @@ int main(int argc, char **argv) {
                 OctomapOccupied_cubelist.points.push_back(p); 
                 j++;
             }
-            ROS_INFO("Publishing %ld occupied cells", j);
+            ROS_INFO("Updating %ld 3D occupied cells in RVIZ", j);
             Octomap_marker_pub.publish(OctomapOccupied_cubelist); //publish octomap############
 
               // Prepare the header for 2d occupied array
@@ -756,7 +753,7 @@ int main(int argc, char **argv) {
                   OctomapOccupied_cubelist.points.push_back(p); 
                   j++;
               }
-              ROS_INFO("Publishing %ld 3D occupied cells", j);
+              ROS_INFO("Updating %ld 3D occupied cells in RVIZ", j);
               Octomap_marker_3d_pub.publish(OctomapOccupied_cubelist_3d); //publish octomap############
 
             // Prepare the header for free array
@@ -785,7 +782,7 @@ int main(int argc, char **argv) {
                 Free_cubelist.points.push_back(p); 
                 j++;
             }
-            ROS_INFO("Publishing %ld free cells", j);
+            ROS_INFO("Updating %ld free cells in RVIZ", j);
             Free_marker_pub.publish(Free_cubelist); //publish octomap############
             //unsigned long int g;
 
@@ -815,18 +812,18 @@ int main(int argc, char **argv) {
                 Free_cubelist_3d.points.push_back(p); 
                 j++;
             }
-            ROS_INFO("Publishing %ld free cells", j);
+            ROS_INFO("Updating %ld free cells in RVIZ", j);
             Free_marker_3d_pub.publish(Free_cubelist_3d); //publish octomap############
 
             // Send out results to file.
             explo_log_file.open(logfilename, std::ofstream::out | std::ofstream::app);
-            explo_log_file << "DA Step: " << robot_step_counter << "  | Current Entropy: " << get_free_volume(cur_tree) << endl;
+            explo_log_file << "Robot Step(DA): " << robot_step_counter << "  - Current Entropy: " << countFreeVolume(cur_tree) << endl;
             explo_log_file.close();
 
         }
         else
         {
-            ROS_ERROR("Failed to navigate to goal");
+            ROS_ERROR("Cannot navigate to the best view point, switch to a second best...");
             p--;
             if(p < 0){
                continue;
