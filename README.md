@@ -8,7 +8,7 @@ Link to [wiki page](http://wiki.ros.org/turtlebot_exploration_3d) (where you can
 
 If you find this package useful, please consider citing the follow paper:
 
-* S. Bai, J. Wang, K. Doherty, and B. Englot, "Inference-Enabled Information-Theoretic Exploration of Continuous Action Spaces,"Proceedings of the 17th International Symposium on Robotics Research, 16 pp., September 2015. 
+* S. Bai, J. Wang, F. Chen, and B. Englot, "Information-Theoretic Exploration with Bayesian Optimization," IEEE/RSJ International Conference on Intelligent Robots and Systems(IROS), October 2016.[PDF](http://personal.stevens.edu/~benglot/Bai_Wang_Chen_Englot_IROS2016_AcceptedVersion.pdf)
 
 
 ## How do I get set up? 

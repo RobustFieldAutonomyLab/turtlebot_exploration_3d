@@ -120,8 +120,8 @@ include_directories(
 add_library(navigation                      src/navigation_utils.cpp)
 
 ## Declare a cpp executable
-add_executable(scan_to_pcl                  src/scan_to_pcl.cpp)
-add_executable(turtlebot_exploration_3d     src/turtlebot_exploration_3d.cpp)
+# add_executable(scan_to_pcl                  src/scan_to_pcl.cpp)
+add_executable(turtlebot_exploration_3d     src/turtlebot_exploration_3d.cpp src/gpregressor.cpp  src/covMaterniso3.cpp)
 
 
 ## Add cmake target dependencies of the executable/library
@@ -135,9 +135,9 @@ target_link_libraries(turtlebot_exploration_3d
   navigation
 )
 
-target_link_libraries(scan_to_pcl
-  ${catkin_LIBRARIES}
-)
+# target_link_libraries(scan_to_pcl
+#   ${catkin_LIBRARIES}
+# )
 
 
 #############
