@@ -2,8 +2,8 @@
 Changelog for package turtlebot_exploration_3d
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.2 (2016-12-20)
+------------------
 * prepare for release-packagexml
 * prepare for release
 * update resolution to 0.1, as well as 15 evaluations per step
