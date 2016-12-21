@@ -2,8 +2,8 @@
 Changelog for package turtlebot_exploration_3d
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.5 (2016-12-21)
+------------------
 * adding visualization_msgs to package for bloom build
 * Contributors: baishi.bona@gmail.com
 
