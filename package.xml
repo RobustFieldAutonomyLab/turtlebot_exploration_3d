@@ -21,12 +21,14 @@
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>geometry_msgs</build_depend>
+  <build_depend>visualization_msgs</build_depend>
   <build_depend>octomap_msgs</build_depend>
   <build_depend>octomap_ros</build_depend>
   <build_depend>pcl_ros</build_depend>
   <build_depend>move_base_msgs</build_depend>
   <build_depend>actionlib</build_depend>
   <run_depend>move_base_msgs</run_depend>
+  <run_depend>visualization_msgs</run_depend>
   <run_depend>actionlib</run_depend>
   <run_depend>turtlebot_navigation</run_depend>
 
