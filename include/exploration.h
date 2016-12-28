@@ -189,7 +189,7 @@ vector<pair<point3d, point3d>> extractCandidateViewPoints(vector<vector<point3d>
     double R2_min = 1.0;        // distance from candidate view point to frontier centers, in meters.
     double R2_max = 5.0;
     double R3 = 0.3;        // to other frontiers
-    // int n = 12;
+
     octomap::OcTreeNode *n_cur_3d;
     vector<pair<point3d, point3d>> candidates;
     double z = sensor_orig.z();
@@ -198,7 +198,7 @@ vector<pair<point3d, point3d>> extractCandidateViewPoints(vector<vector<point3d>
     double distance_can;
 
         for(vector<vector<point3d>>::size_type u = 0; u < frontier_groups.size(); u++) {
-            for(double yaw = 0; yaw < 2*PI; yaw += PI*2 / n)
+            for(double yaw = 0; yaw < 2*PI; yaw += PI*2 / num_of_samples)
                 for(double R2 = R2_min; R2<R2_max; R2+=1.0) { 
                 x = frontier_groups[u][0].x() - R2 * cos(yaw);
                 y = frontier_groups[u][0].y() - R2 * sin(yaw);
