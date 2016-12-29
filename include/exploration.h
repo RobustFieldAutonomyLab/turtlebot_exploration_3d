@@ -23,7 +23,7 @@ typedef pcl::PointXYZ PointType;
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 const double PI = 3.1415926;
 const double octo_reso = 0.1;
-const int num_of_samples = 12;
+const int num_of_samples = 24;
 const int num_of_samples_eva = 15;
 const int num_of_bay = 3;
 
@@ -37,7 +37,7 @@ tf::TransformListener *tf_listener;
 point3d kinect_orig;
 
 ofstream explo_log_file;
-std::string octomap_name_2d, octomap_name_3d;
+std::string octomap_name_3d;
 
 vector<int> sort_MIs(const vector<double> &v){
     vector<int> idx(v.size());
@@ -117,7 +117,7 @@ vector<vector<point3d>> extractFrontierPoints(const octomap::OcTree *octree) {
     bool frontier_true;         // whether or not a frontier point
     bool belong_old;            //whether or not belong to old group
     double distance;
-    double R1 = 0.5;            //group size
+    double R1 = 0.4;            //group size
     double x_cur, y_cur, z_cur;
 
 
@@ -193,12 +193,10 @@ vector<pair<point3d, point3d>> extractCandidateViewPoints(vector<vector<point3d>
     octomap::OcTreeNode *n_cur_3d;
     vector<pair<point3d, point3d>> candidates;
     double z = sensor_orig.z();
-    double x, y;
-    double yaw;
-    double distance_can;
+    double x, y, yaw, distance_can;
 
         for(vector<vector<point3d>>::size_type u = 0; u < frontier_groups.size(); u++) {
-            for(double yaw = 0; yaw < 2*PI; yaw += PI*2 / num_of_samples)
+            for(double yaw = 0; yaw < 2*PI; yaw += PI*2/n )
                 for(double R2 = R2_min; R2<R2_max; R2+=1.0) { 
                 x = frontier_groups[u][0].x() - R2 * cos(yaw);
                 y = frontier_groups[u][0].y() - R2 * sin(yaw);
