@@ -2,8 +2,8 @@
 Changelog for package turtlebot_exploration_3d
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.6 (2016-12-29)
+------------------
 * add install
 * update parameters, bug false alarm cleared
 * fix bug, n--num_of_samples
