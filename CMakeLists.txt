@@ -96,9 +96,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+ INCLUDE_DIRS include
 #  LIBRARIES turtlebot_exploration_3d
-#  CATKIN_DEPENDS geometry_msgs octomap_msgs octomap_ros octomap_server pcl_ros roscpp std_msgs actionlib move_base_msgs
+ # CATKIN_DEPENDS geometry_msgs octomap_msgs octomap_ros octomap_server pcl_ros roscpp std_msgs actionlib move_base_msgs
 #  DEPENDS system_lib
 )
 
@@ -133,9 +133,12 @@ target_link_libraries(turtlebot_exploration_3d
 #############
 ## Install ##
 #############
-
-## Mark executables and/or libraries for installation
 install(TARGETS turtlebot_exploration_3d
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
+install(DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch/
+)

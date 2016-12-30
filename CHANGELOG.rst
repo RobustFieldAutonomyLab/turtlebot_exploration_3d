@@ -2,12 +2,15 @@
 Changelog for package turtlebot_exploration_3d
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.6 (2016-12-29)
 ------------------
-* add install
+* add install, and launch 
 * update parameters, bug false alarm cleared
 * fix bug, n--num_of_samples
-* Contributors: baishi.bona@gmail.com, bona_desk_1
+* Contributors: baishi.bona@gmail.com
 
 0.0.5 (2016-12-21)
 ------------------
