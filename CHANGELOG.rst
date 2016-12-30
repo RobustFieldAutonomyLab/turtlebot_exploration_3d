@@ -2,6 +2,13 @@
 Changelog for package turtlebot_exploration_3d
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add install
+* update parameters, bug false alarm cleared
+* fix bug, n--num_of_samples
+* Contributors: baishi.bona@gmail.com, bona_desk_1
+
 0.0.5 (2016-12-21)
 ------------------
 * adding visualization_msgs to package for bloom build
