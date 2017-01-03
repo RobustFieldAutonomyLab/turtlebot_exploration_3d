@@ -2,6 +2,11 @@
 Changelog for package turtlebot_exploration_3d
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* update install list
+* Contributors: baishi.bona@gmail.com
+
 0.0.7 (2016-12-29)
 ------------------
 
