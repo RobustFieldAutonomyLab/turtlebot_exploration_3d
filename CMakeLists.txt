@@ -133,7 +133,7 @@ target_link_libraries(turtlebot_exploration_3d
 #############
 ## Install ##
 #############
-install(TARGETS turtlebot_exploration_3d
+install(TARGETS turtlebot_exploration_3d navigation
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
