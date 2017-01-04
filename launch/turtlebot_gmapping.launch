@@ -65,7 +65,4 @@
 
   <include file="$(find turtlebot_navigation)/launch/includes/move_base.launch.xml"/>
 
-  <node pkg="turtlebot_exploration_3d" type="scan_to_pcl" name="scan_to_pcl" />
-
-
 </launch>
