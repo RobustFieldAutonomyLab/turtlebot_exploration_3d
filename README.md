@@ -21,6 +21,11 @@ my_catkin_workspace/src$ cd ..
 my_catkin_workspace$ catkin_make
 ```
 
+### Dependency:
+```
+sudo apt-get install ros-indigo-octomap*
+```
+
 ### Configure Network:
 Please follow the [turtlebot network configuration](http://wiki.ros.org/turtlebot/Tutorials/indigo/Network%20Configuration) to setup.
 
