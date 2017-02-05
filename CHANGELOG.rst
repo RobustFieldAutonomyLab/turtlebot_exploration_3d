@@ -4,6 +4,13 @@ Changelog for package turtlebot_exploration_3d
 
 Forthcoming
 -----------
+* Merge branch 'master' of https://github.com/RobustFieldAutonomyLab/turtlebot_exploration_3d
+* minor change to screen output
+* update installation guide, dependency
+* update installation guide, dependency
+* update launch file, no need for scan_to_pcl
+* Contributors: baishi.bona@gmail.com, baishibona
+
 * update launch file, no need for scan_to_pcl
 * Contributors: baishi.bona@gmail.com
 
