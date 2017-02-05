@@ -31,6 +31,7 @@
   <run_depend>visualization_msgs</run_depend>
   <run_depend>actionlib</run_depend>
   <run_depend>turtlebot_navigation</run_depend>
+  <run_depend>octomap_rviz_plugins</run_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

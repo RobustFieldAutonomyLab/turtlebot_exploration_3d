@@ -2,6 +2,11 @@
 Changelog for package turtlebot_exploration_3d
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* update launch file, no need for scan_to_pcl
+* Contributors: baishi.bona@gmail.com
+
 0.0.8 (2017-01-03)
 ------------------
 * update install list

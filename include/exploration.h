@@ -197,7 +197,7 @@ vector<pair<point3d, point3d>> extractCandidateViewPoints(vector<vector<point3d>
 
         for(vector<vector<point3d>>::size_type u = 0; u < frontier_groups.size(); u++) {
             for(double yaw = 0; yaw < 2*PI; yaw += PI*2/n )
-                for(double R2 = R2_min; R2<R2_max; R2+=1.0) { 
+                for(double R2 = R2_min; R2<=R2_max; R2+=1.0) { 
                 x = frontier_groups[u][0].x() - R2 * cos(yaw);
                 y = frontier_groups[u][0].y() - R2 * sin(yaw);
 
@@ -230,7 +230,7 @@ vector<pair<point3d, point3d>> extractCandidateViewPoints(vector<vector<point3d>
                     // volumn check
                     for (double x_buf = x - 0.3; x_buf < x + 0.3; x_buf += octo_reso) 
                         for (double y_buf = y - 0.3; y_buf < y + 0.3; y_buf += octo_reso)
-                            for (double z_buf = sensor_orig.z()-0.2; z_buf <sensor_orig.z()+0.2; z_buf += octo_reso)
+                            for (double z_buf = sensor_orig.z()-0.1; z_buf <sensor_orig.z()+0.3; z_buf += octo_reso)
                             {
                                 n_cur_3d = cur_tree->search(point3d(x_buf, y_buf, z_buf));
                                 if(!n_cur_3d)       continue;
@@ -287,9 +287,10 @@ void kinectCallbacks( const sensor_msgs::PointCloud2ConstPtr& cloud2_msg ) {
     }
 
     cur_tree->insertPointCloud(hits, kinect_orig, Kinect_360.max_range);
+    
+    cur_tree->write(octomap_name_3d);
     ROS_INFO("Entropy(3d map) : %f", countFreeVolume(cur_tree));
 
-    cur_tree->write(octomap_name_3d);
     delete cloud;
     delete cloud_local;
 }

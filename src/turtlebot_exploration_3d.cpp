@@ -160,10 +160,10 @@ int main(int argc, char **argv) {
         vector<pair<point3d, point3d>> candidates = extractCandidateViewPoints(frontier_groups, kinect_orig, num_of_samples); 
         std::random_shuffle(candidates.begin(),candidates.end()); // shuffle to select a subset
         vector<pair<point3d, point3d>> gp_test_poses = candidates;
-        ROS_INFO("Candidate View Points: %luGenereated, %d evaluating...", candidates.size(), num_of_samples_eva);
+        ROS_INFO("Candidate View Points: %lu Genereated, %d evaluating...", candidates.size(), num_of_samples_eva);
         int temp_size = candidates.size()-3;
         if (temp_size < 1) {
-            ROS_ERROR("Very few candidates generated, maybe finishing with exploration...");
+            ROS_ERROR("Very few candidates generated, finishing with exploration...");
             nh.shutdown();
             return 0;
         }
@@ -189,11 +189,11 @@ int main(int argc, char **argv) {
             octomap::Pointcloud hits = castSensorRays(cur_tree, c.first, Sensor_PrincipalAxis);
             
             // Considering pure MI for decision making
-            MIs[i] = calc_MI(cur_tree, c.first, hits, before);
+            // MIs[i] = calc_MI(cur_tree, c.first, hits, before);
             
             // Normalize the MI with distance
-            // MIs[i] = calc_MI(cur_tree, c.first, hits, before) / 
-            //     sqrt(pow(c.first.x()-kinect_orig.x(),2) + pow(c.first.y()-kinect_orig.y(),2));
+            MIs[i] = calc_MI(cur_tree, c.first, hits, before) / 
+                sqrt(pow(c.first.x()-kinect_orig.x(),2) + pow(c.first.y()-kinect_orig.y(),2));
 
             // Pick the Candidate view point with max MI
             // if (MIs[i] > MIs[max_idx])
@@ -254,11 +254,11 @@ int main(int argc, char **argv) {
         ROS_INFO("Mutual Infomation Eva took:  %3.3f Secs.", end_mi_eva_secs - begin_mi_eva_secs);
 
         // Normalize the MI with distance
-        for(int i = 0; i < candidates.size(); i++) {
-            auto c = candidates[i];
-            MIs[i] = MIs[i] / 
-                sqrt(pow(c.first.x()-kinect_orig.x(),2) + pow(c.first.y()-kinect_orig.y(),2));
-        }
+        // for(int i = 0; i < candidates.size(); i++) {
+        //     auto c = candidates[i];
+        //     MIs[i] = MIs[i] / 
+        //         sqrt(pow(c.first.x()-kinect_orig.x(),2) + pow(c.first.y()-kinect_orig.y(),2));
+        // }
 
         // sort vector MIs, with idx_MI, descending
         vector<int> idx_MI = sort_MIs(MIs);
@@ -288,9 +288,9 @@ int main(int argc, char **argv) {
             CandidatesMarker_array.markers[i].scale.y = 0.2;
             CandidatesMarker_array.markers[i].scale.z = 0.2;
             CandidatesMarker_array.markers[i].color.a = (double)MIs[i]/MIs[idx_MI[0]];
-            CandidatesMarker_array.markers[i].color.r = 0.0;
-            CandidatesMarker_array.markers[i].color.g = 1.0;
-            CandidatesMarker_array.markers[i].color.b = 0.0;
+            CandidatesMarker_array.markers[i].color.r = 1.0;
+            CandidatesMarker_array.markers[i].color.g = 0.55;
+            CandidatesMarker_array.markers[i].color.b = 0.22;
         }
         Candidates_pub.publish(CandidatesMarker_array);
         CandidatesMarker_array.markers.clear();
@@ -323,12 +323,12 @@ int main(int argc, char **argv) {
             marker.pose.orientation.y = Goal_heading.y();
             marker.pose.orientation.z = Goal_heading.z();
             marker.pose.orientation.w = Goal_heading.w();
-            marker.scale.x = 0.5;
-            marker.scale.y = 0.1;
-            marker.scale.z = 0.1;
+            marker.scale.x = 1.5;
+            marker.scale.y = 0.3;
+            marker.scale.z = 1.0;
             marker.color.a = 1.0; // Don't forget to set the alpha!
             marker.color.r = 1.0;
-            marker.color.g = 1.0;
+            marker.color.g = 0.0;
             marker.color.b = 0.0;
             GoalMarker_pub.publish( marker );
 
