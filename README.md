@@ -13,6 +13,13 @@ If you find this package useful, please consider citing the follow paper:
 
 ## How do I get set up? 
 
+
+### Install Dependencies:
+```
+sudo apt-get install ros-indigo-octomap*
+```
+
+
 ### Download from source:
 
 ```
@@ -21,8 +28,10 @@ my_catkin_workspace/src$ cd ..
 my_catkin_workspace$ catkin_make
 ```
 
+
 ### Configure Network:
 Please follow the [turtlebot network configuration](http://wiki.ros.org/turtlebot/Tutorials/indigo/Network%20Configuration) to setup.
+
 
 ### Running:
 
@@ -34,13 +43,15 @@ $ rosrun turtlebot_exploration_3d turtlebot_exploration_3d
 ```
 * note: The octomap will be saved to the place where you do the "rosrun".
 
+
 From Remote Server:
 ```
 $ roslaunch turtlebot_exploration_3d exploration_rviz.launch
 ```
 
+
+
 ### Authors ###
 
 Shi Bai, Xiangyu Xu.
 [RFAL (Robust Field Autonomy Lab)](http://personal.stevens.edu/~benglot/index.html), Stevens Institute of Technology.
-
