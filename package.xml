@@ -1,16 +1,18 @@
 <?xml version="1.0"?>
 <package>
-  <name>server_mi_eva</name>
-  <version>0.0.1</version>
-  <description>Mutual Information Evaluation - Server</description>
+  <name>turtlebot_exploration_3d</name>
+  <version>0.0.9</version>
+  <description>Autonomous Exploration package for a Turtulebot equiped with RGBD Sensor(Kinect, Xtion)</description>
 
   <maintainer email="baishi.bona@gmail.com">Bona</maintainer>
+  <maintainer email="xxu24@stevens.edu">Shawn</maintainer>
 
   <license>BSD</license>
 
-  <url type="website">http://wiki.ros.org/server_mi_eva</url>
+  <url type="website">http://wiki.ros.org/turtlebot_exploration_3d</url>
 
   <author email="baishi.bona@gmail.com">Bona</author>
+  <author email="xxu24@stevens.edu">Shawn</author>
 
 
   <!-- The *_depend tags are used to specify dependencies -->
@@ -19,9 +21,16 @@
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>geometry_msgs</build_depend>
+  <build_depend>visualization_msgs</build_depend>
   <build_depend>octomap_msgs</build_depend>
   <build_depend>octomap_ros</build_depend>
   <build_depend>pcl_ros</build_depend>
+  <build_depend>move_base_msgs</build_depend>
+  <build_depend>actionlib</build_depend>
+  <run_depend>move_base_msgs</run_depend>
+  <run_depend>visualization_msgs</run_depend>
+  <run_depend>actionlib</run_depend>
+  <run_depend>turtlebot_navigation</run_depend>
   <run_depend>octomap_rviz_plugins</run_depend>
 
 

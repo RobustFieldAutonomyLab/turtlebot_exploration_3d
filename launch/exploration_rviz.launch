@@ -1,0 +1,4 @@
+<launch>  
+<node name="rviz" pkg="rviz" type="rviz" args="-d $(find turtlebot_exploration_3d)/launch/turtlebot_explo.rviz" />
+
+</launch>
