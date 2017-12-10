@@ -1,7 +1,5 @@
 # Turtlebot Autonomous Exploration (3D) 
 
-Sorry I recently updated a wrong version of this. The bad repository was from Oct. 8th and now it's been fixed. Please let me know if you run into any issue with the current version.
-
 ## Overview
 
 This is an ROS implementation of infomation-theoretic exploration using [turtlebot](http://wiki.ros.org/Robots/TurtleBot) with a RGBD camera (e.g. Kinect). It is designed for autonomous mapping of indoor office-like environments (flat terrain). All the computation is performed on the turtlebot laptop and intermediate results can be viewed from remote PC. The output consist of both 2D and 3D [Octomap](http://octomap.github.io/) (.ot) file and saved on the turtlebot laptop.
