@@ -22,8 +22,7 @@ typedef octomap::point3d point3d;
 typedef pcl::PointXYZ PointType;
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 const double PI = 3.1415926;
-const double octo_reso = 0.1;
-const int num_of_samples = 24;
+const double octo_reso = 0.05;
 const int num_of_samples_eva = 15;
 const int num_of_bay = 3;
 
@@ -74,7 +73,7 @@ struct sensorModel {
         }
     }
 }; 
-sensorModel Kinect_360(64, 48, 2*PI*57/360, 2*PI*43/360, 6);    // Construct sensor model : Kinect
+sensorModel Kinect_360(128, 96, 2*PI*57/360, 2*PI*43/360, 6);    // Construct sensor model : Kinect
 
 
 double countFreeVolume(const octomap::OcTree *octree) {
@@ -197,7 +196,7 @@ vector<pair<point3d, point3d>> extractCandidateViewPoints(vector<vector<point3d>
 
         for(vector<vector<point3d>>::size_type u = 0; u < frontier_groups.size(); u++) {
             for(double yaw = 0; yaw < 2*PI; yaw += PI*2/n )
-                for(double R2 = R2_min; R2<=R2_max; R2+=1.0) { 
+                for(double R2 = R2_min; R2<=R2_max; R2+=0.5) { 
                 x = frontier_groups[u][0].x() - R2 * cos(yaw);
                 y = frontier_groups[u][0].y() - R2 * sin(yaw);
 

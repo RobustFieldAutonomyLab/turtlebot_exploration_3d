@@ -31,18 +31,16 @@ int main(int argc, char **argv) {
     char buffer[80];
     time (&rawtime);
     timeinfo = localtime(&rawtime);
-    // strftime(buffer,80,"Trajectory_%R_%S_%m%d_DA.txt",timeinfo);
-    // std::string logfilename(buffer);
-    // std::cout << logfilename << endl;
 
-    strftime(buffer,80,"Octomap3D_%m%d_%R_%S.ot",timeinfo);
+
+    strftime(buffer,80,"Octomap3D_%m%d_%R.ot",timeinfo);
     octomap_name_3d = buffer;
 
 
     ros::Subscriber kinect_sub = nh.subscribe<sensor_msgs::PointCloud2>("/camera/depth_registered/points", 1, kinectCallbacks);// need to change##########
-    ros::Publisher GoalMarker_pub = nh.advertise<visualization_msgs::Marker>( "Goal_Marker", 1 );
-    ros::Publisher Candidates_pub = nh.advertise<visualization_msgs::MarkerArray>("Candidate_MIs", 1);
-    ros::Publisher Frontier_points_pub = nh.advertise<visualization_msgs::Marker>("Frontier_points", 1);
+    ros::Publisher GoalMarker_pub = nh.advertise<visualization_msgs::Marker>( "/Goal_Marker", 1 );
+    ros::Publisher Candidates_pub = nh.advertise<visualization_msgs::MarkerArray>("/Candidate_MIs", 1);
+    ros::Publisher Frontier_points_pub = nh.advertise<visualization_msgs::Marker>("/Frontier_points", 1);
     ros::Publisher pub_twist = nh.advertise<geometry_msgs::Twist>("/cmd_vel_mux/input/teleop", 1);
     ros::Publisher Octomap_pub = nh.advertise<octomap_msgs::Octomap>("octomap_3d",1);
 
@@ -60,12 +58,9 @@ int main(int argc, char **argv) {
     // Initialize parameters 
     int max_idx = 0;
 
-    point3d Sensor_PrincipalAxis(1, 0, 0);
     octomap::OcTreeNode *n;
     octomap::OcTree new_tree(octo_reso);
-    octomap::OcTree new_tree_2d(octo_reso);
     cur_tree = &new_tree;
-    cur_tree_2d = &new_tree_2d;
     point3d next_vp;
 
     bool got_tf = false;
@@ -90,12 +85,21 @@ int main(int argc, char **argv) {
         // Take a Scan
         ros::spinOnce();
 
+        // prepare octomap msg
+        octomap_msgs::binaryMapToMsg(*cur_tree, msg_octomap);
+        msg_octomap.binary = 1;
+        msg_octomap.id = 1;
+        msg_octomap.resolution = octo_reso;
+        msg_octomap.header.frame_id = "/map";
+        msg_octomap.header.stamp = ros::Time::now();
+        Octomap_pub.publish(msg_octomap);
+
         // Rotate another 60 degrees
         twist_cmd.linear.x = twist_cmd.linear.y = twist_cmd.angular.z = 0;
         ros::Time start_turn = ros::Time::now();
 
-        ROS_WARN("Rotate 60 degrees");
-        while (ros::Time::now() - start_turn < ros::Duration(2.6)){ // turning duration - second
+        ROS_WARN("Rotate...");
+        while (ros::Time::now() - start_turn < ros::Duration(3.0)){ // turning duration - second
         twist_cmd.angular.z = 0.6; // turning speed
         // turning angle = turning speed * turning duration / 3.14 * 180
         pub_twist.publish(twist_cmd);
@@ -121,10 +125,8 @@ int main(int argc, char **argv) {
         }
 
         Frontier_points_cubelist.points.resize(o);
-        ROS_INFO("frontier points %ld", o);
-        now_marker = ros::Time::now();
         Frontier_points_cubelist.header.frame_id = "map";
-        Frontier_points_cubelist.header.stamp = now_marker;
+        Frontier_points_cubelist.header.stamp = ros::Time::now();
         Frontier_points_cubelist.ns = "frontier_points_array";
         Frontier_points_cubelist.id = 0;
         Frontier_points_cubelist.type = visualization_msgs::Marker::CUBE_LIST;
@@ -147,17 +149,15 @@ int main(int argc, char **argv) {
                q.y = frontier_groups[n][m].y();
                q.z = frontier_groups[n][m].z()+octo_reso;
                Frontier_points_cubelist.points.push_back(q); 
-               
             }
             t++;
         }
-        ROS_INFO("Publishing %ld frontier_groups", t);
         
         Frontier_points_pub.publish(Frontier_points_cubelist); //publish frontier_points
         Frontier_points_cubelist.points.clear();           
 
         // Generate Candidates
-        vector<pair<point3d, point3d>> candidates = extractCandidateViewPoints(frontier_groups, kinect_orig, num_of_samples); 
+        vector<pair<point3d, point3d>> candidates = extractCandidateViewPoints(frontier_groups, kinect_orig, 30); 
         std::random_shuffle(candidates.begin(),candidates.end()); // shuffle to select a subset
         vector<pair<point3d, point3d>> gp_test_poses = candidates;
         ROS_INFO("Candidate View Points: %lu Genereated, %d evaluating...", candidates.size(), num_of_samples_eva);
@@ -172,7 +172,7 @@ int main(int argc, char **argv) {
         candidates.resize(min(num_of_samples_eva,temp_size));
         frontier_groups.clear();
 
-// Evaluate MI for every candidate view points
+        // Evaluate MI for every candidate view points
         vector<double>  MIs(candidates.size());
         double before = countFreeVolume(cur_tree);
         // int max_idx = 0;
@@ -184,9 +184,7 @@ int main(int argc, char **argv) {
         {
             auto c = candidates[i];
             // Evaluate Mutual Information
-            Sensor_PrincipalAxis = point3d(1.0, 0.0, 0.0);
-            Sensor_PrincipalAxis.rotate_IP(c.second.roll(), c.second.pitch(), c.second.yaw() );
-            octomap::Pointcloud hits = castSensorRays(cur_tree, c.first, Sensor_PrincipalAxis);
+            octomap::Pointcloud hits = castSensorRays(cur_tree, c.first, c.second);
             
             // Considering pure MI for decision making
             // MIs[i] = calc_MI(cur_tree, c.first, hits, before);
@@ -209,17 +207,19 @@ int main(int argc, char **argv) {
         for (int bay_itr = 0; bay_itr < num_of_bay; bay_itr++) {
             //Initialize gp regression
             
-            MatrixXf gp_train_x(candidates.size(), 2), gp_train_label(candidates.size(), 1), gp_test_x(gp_test_poses.size(), 2);
+            MatrixXf gp_train_x(candidates.size(), 3), gp_train_label(candidates.size(), 1), gp_test_x(gp_test_poses.size(), 3);
 
             for (int i=0; i< candidates.size(); i++){
                 gp_train_x(i,0) = candidates[i].first.x();
                 gp_train_x(i,1) = candidates[i].first.y();
+                gp_train_x(i,2) = candidates[i].second.z();
                 gp_train_label(i) = MIs[i];
             }
 
             for (int i=0; i< gp_test_poses.size(); i++){
                 gp_test_x(i,0) = gp_test_poses[i].first.x();
                 gp_test_x(i,1) = gp_test_poses[i].first.y();
+                gp_test_x(i,2) = gp_test_poses[i].second.z();
             }
 
             // Perform GP regression
@@ -231,7 +231,6 @@ int main(int argc, char **argv) {
             test_time = ros::Time::now().toSec();
             g.test(gp_test_x, gp_mean_MI, gp_var_MI);
             test_time = ros::Time::now().toSec() - test_time;
-            ROS_INFO("GP: Train(%zd) took %f secs , Test(%zd) took %f secs", candidates.size(), train_time, gp_test_poses.size(), test_time);        
 
             // Get Acquisition function
             double beta = 2.4;
@@ -243,11 +242,10 @@ int main(int argc, char **argv) {
 
             // evaluate MI, add to the candidate
             auto c = gp_test_poses[idx_acq[0]];
-            Sensor_PrincipalAxis = point3d(1.0, 0.0, 0.0);
-            Sensor_PrincipalAxis.rotate_IP(c.second.roll(), c.second.pitch(), c.second.yaw() );
-            octomap::Pointcloud hits = castSensorRays(cur_tree, c.first, Sensor_PrincipalAxis);
+            octomap::Pointcloud hits = castSensorRays(cur_tree, c.first, c.second);
             candidates.push_back(c);
             MIs.push_back(calc_MI(cur_tree, c.first, hits, before));
+            gp_test_poses.erase(gp_test_poses.begin()+idx_acq[0]);
         }
         
         end_mi_eva_secs = ros::Time::now().toSec();
@@ -323,9 +321,9 @@ int main(int argc, char **argv) {
             marker.pose.orientation.y = Goal_heading.y();
             marker.pose.orientation.z = Goal_heading.z();
             marker.pose.orientation.w = Goal_heading.w();
-            marker.scale.x = 1.5;
+            marker.scale.x = 1.0;
             marker.scale.y = 0.3;
-            marker.scale.z = 1.0;
+            marker.scale.z = 0.3;
             marker.color.a = 1.0; // Don't forget to set the alpha!
             marker.color.r = 1.0;
             marker.color.g = 0.0;
@@ -363,12 +361,6 @@ int main(int argc, char **argv) {
                 msg_octomap.header.frame_id = "/map";
                 msg_octomap.header.stamp = ros::Time::now();
                 Octomap_pub.publish(msg_octomap);
-                ROS_INFO("Octomap updated in RVIZ");
-
-                // // Send out results to file.
-                // explo_log_file.open(logfilename, std::ofstream::out | std::ofstream::app);
-                // explo_log_file << "DA Step ," << robot_step_counter << ", Current Entropy ," << countFreeVolume(cur_tree) << ", time, " << ros::Time::now().toSec() << endl;
-                // explo_log_file.close();
 
             }
             else
