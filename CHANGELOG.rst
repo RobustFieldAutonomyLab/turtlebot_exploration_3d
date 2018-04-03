@@ -2,8 +2,8 @@
 Changelog for package turtlebot_exploration_3d
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.10 (2018-04-03)
+-------------------
 * Update
   Update parameters.
 * fix the bad version
