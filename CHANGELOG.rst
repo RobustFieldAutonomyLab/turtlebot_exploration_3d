@@ -2,6 +2,15 @@
 Changelog for package turtlebot_exploration_3d
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update
+  Update parameters.
+* fix the bad version
+* error
+* first commit
+* Contributors: bona, bona_laptop
+
 0.0.9 (2017-02-04)
 ------------------
 * Merge branch 'master' of https://github.com/RobustFieldAutonomyLab/turtlebot_exploration_3d
