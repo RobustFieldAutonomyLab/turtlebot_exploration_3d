@@ -14,7 +14,7 @@
 
 #include <geometry_msgs/Pose.h>
 #include <algorithm>
-
+#include <numeric>
 
 using namespace std;
 
